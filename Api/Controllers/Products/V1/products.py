@@ -1,19 +1,17 @@
 from fastapi import APIRouter
 
 router = APIRouter(
-    prefix="/api/v1/products",
-    tags=["Products V1"],
+    tags=["Products"]
 )
 
-
-@router.get("/")
+@router.get("/products")
 def get_products():
-    return {"message": "Get products - V1"}
+    return {"version": "v1", "message": "Products API"}
 
 
-@router.get("/{product_id}")
+@router.get("/products/{product_id}")
 def get_product(product_id: int):
     return {
-        "message": "Get product - V1",
+        "version": "v1",
         "product_id": product_id,
     }

@@ -1,19 +1,17 @@
 from fastapi import APIRouter
 
 router = APIRouter(
-    prefix="/api/v1/users",
-     tags=["Users V1"],
+    tags=["Users"]
 )
 
-
-@router.get("/")
+@router.get("/users")
 def get_users():
-    return {"message": "Get users - V1"}
+    return {"version": "v1", "message": "Users API"}
 
 
-@router.get("/{user_id}")
+@router.get("/users/{user_id}")
 def get_user(user_id: int):
     return {
-        "message": "Get user - V1",
+        "version": "v1",
         "user_id": user_id,
     }

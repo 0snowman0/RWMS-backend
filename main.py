@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-
-from Api.Configs.router_loader import register_routers
-
+from Configs.api_config import setup_api
 
 app = FastAPI(
     title="RWMS Backend",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,  
 )
 
-
-register_routers(app)
+setup_api(app) 

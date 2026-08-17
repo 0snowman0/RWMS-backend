@@ -1,0 +1,6 @@
+git status
+git add .
+git commit -m "Add API controllers structure"
+git push origin main
+git push -u origin main
+.\.venv\Scripts\Activate.ps1 
