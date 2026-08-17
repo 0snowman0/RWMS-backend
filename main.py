@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from Api.Configs.router_loader import register_routers
 
 
-@app.get("/")
-def root():
-    return {"message": "RWMS API is running"}
+app = FastAPI(
+    title="RWMS Backend",
+)
+
+
+register_routers(app)
