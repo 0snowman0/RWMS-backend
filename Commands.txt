@@ -4,3 +4,16 @@ git commit -m "Add API controllers structure"
 git push origin main
 git push -u origin main
 .\.venv\Scripts\Activate.ps1 
+
+-------------- Create Init.py  File
+Get-ChildItem -Recurse -Directory | ForEach-Object {
+    $initFile = Join-Path $_.FullName "__init__.py"
+    if (-not (Test-Path $initFile)) {
+        New-Item -Path $initFile -ItemType File -Force | Out-Null
+        Write-Host "✅ Created: $initFile"
+    }
+}
+
+
+alembic revision --autogenerate -m "create users table"
+alembic upgrade head
