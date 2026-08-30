@@ -11,14 +11,14 @@ from dotenv import load_dotenv
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
 
-from Core.Domain.Models import *
-from Infrastructure.Persistence.Configs.PGdatabase import Base
-
-from Core.Domain.Models.user import User
-
-
 load_dotenv()
 
+from Infrastructure.Persistence.Configs.PGdatabase import Base
+from Infrastructure.Persistence.Configs.model_loader import import_all_models
+
+import_all_models()
+
+print(Base.metadata.tables.keys())
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
