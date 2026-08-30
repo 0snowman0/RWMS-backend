@@ -13,3 +13,5 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_at22 = Column(DateTime(timezone=True), onupdate=func.now())
     
+    
+    
