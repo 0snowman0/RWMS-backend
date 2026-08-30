@@ -17,3 +17,6 @@ Get-ChildItem -Recurse -Directory | ForEach-Object {
 
 alembic revision --autogenerate -m "create users table"
 alembic upgrade head
+
+
+fastapi dev main.py  
