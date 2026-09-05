@@ -28,6 +28,18 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     def users(self) -> IUserRepository:
         return self._users
 
+    async def __aenter__(self) -> "SqlAlchemyUnitOfWork":
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type,
+        exc_value,
+        traceback,
+    ) -> None:
+        if exc_type is not None:
+            await self.rollback()
+
     async def save_changes(self) -> None:
         await self._session.commit()
 

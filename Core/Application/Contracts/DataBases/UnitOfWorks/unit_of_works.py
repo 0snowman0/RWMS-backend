@@ -11,6 +11,17 @@ class IUnitOfWork(Protocol):
     def users(self) -> IUserRepository:
         ...
 
+    async def __aenter__(self) -> "IUnitOfWork":
+        ...
+
+    async def __aexit__(
+        self,
+        exc_type,
+        exc_value,
+        traceback,
+    ) -> None:
+        ...
+
     async def save_changes(self) -> None:
         ...
 
