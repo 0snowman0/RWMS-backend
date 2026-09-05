@@ -1,5 +1,7 @@
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import IUnitOfWork
 from Core.Application.Contracts.Identities.identity import ITokenService
+from Core.Application.Contracts.Mapper.mapper import IMapper
+from Core.Application.Mapping.mapping_configuration import configure_mapper
 from Infrastructure.Identity.Services.Identities.identity import JWTTokenService
 
 from typing import Annotated
@@ -23,3 +25,15 @@ def get_unit_of_work(
     ],
 ) -> IUnitOfWork:
     return SqlAlchemyUnitOfWork(session)
+
+
+
+_mapper = configure_mapper()
+
+def get_mapper() -> IMapper:
+    return _mapper
+
+MapperDependency = Annotated[
+    IMapper,
+    Depends(get_mapper),
+]
