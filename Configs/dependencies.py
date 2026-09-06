@@ -17,6 +17,11 @@ from Infrastructure.Persistence.UnitOfWorks.unit_of_works import SqlAlchemyUnitO
 def get_token_service() -> ITokenService:
     return JWTTokenService()
 
+TokenServiceDependency = Annotated[
+    ITokenService,
+    Depends(get_token_service)
+]
+
 
 def get_unit_of_work(
     session: Annotated[

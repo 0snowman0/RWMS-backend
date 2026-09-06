@@ -48,8 +48,6 @@ async def create_user(
     )
 
     await uow.users.add(user)
-    await uow.flush()
-    print(user.id)
     await uow.save_changes()
 
     return {

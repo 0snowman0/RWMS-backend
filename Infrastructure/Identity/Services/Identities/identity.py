@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
+from typing import Any
+from fastapi import Response
 from jose import jwt
 from Core.Application.Contracts.Identities.identity import ITokenService
-from Core.Application.DTOs.Identities.Commands.token import TokenRequestDTO, RefreshTokenRequestDTO
+from Core.Application.DTOs.Identities.Commands.token import SetCookieTokenDTO, TokenRequestDTO, RefreshTokenRequestDTO
 from Configs.Identities.identity import settings
 
 
@@ -40,3 +42,58 @@ class JWTTokenService(ITokenService):
         }
         
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+
+    def set_tokens_in_cookies(
+        self,
+        response: Response,
+        request: SetCookieTokenDTO
+    ) -> None:
+
+        response.set_cookie(
+            key="access_token",
+            value=request.access_token,
+            httponly=True,
+            secure=False,
+            samesite="lax",
+            max_age=self.access_expire_minutes * 60,
+            path="/"
+        )
+
+        response.set_cookie(
+            key="refresh_token",
+            value=request.refresh_token,
+            httponly=True,
+            secure=False,
+            samesite="lax",
+            max_age=self.refresh_expire_minutes * 60,
+            path="/"
+        )
+
+    def clear_tokens_from_cookies(
+        self,
+        response: Response
+    ) -> None:
+
+        response.delete_cookie(
+            key="access_token",
+            path="/"
+        )
+
+        response.delete_cookie(
+            key="refresh_token",
+            path="/"
+        )
+
+    def decode_token(
+        self,
+        token: str
+    ) -> dict[str, Any]:
+
+        payload = jwt.decode(
+            token,
+            self.secret_key,
+            algorithms=[self.algorithm],
+            issuer="my-fastapi-app"
+        )
+
+        return payload
