@@ -61,7 +61,25 @@ async def clear_cookie(
         "message": "Tokens removed from cookies successfully"
     }
 
+@router.get("/validate-current-token")
+async def validate_current_token(
+    request: Request,
+    token_service: TokenServiceDependency
+):
+    access_token = request.cookies.get("access_token")
 
+    if access_token is None:
+        return {
+            "is_valid": False,
+            "error": "token_not_found",
+            "message": "Access token was not found in cookies",
+            "payload": None
+        }
+
+    return token_service.validate_token(access_token)
+
+
+@router.get("/get-token-info")
 async def get_current_user_id(
     request: Request,
     token_service: TokenServiceDependency

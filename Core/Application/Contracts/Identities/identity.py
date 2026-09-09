@@ -1,6 +1,6 @@
 from typing import Any, Protocol
 from fastapi import Response
-from Core.Application.DTOs.Identities.Commands.token import TokenRequestDTO, RefreshTokenRequestDTO, SetCookieTokenDTO
+from Core.Application.DTOs.Identities.Commands.token import TokenRequestDTO, RefreshTokenRequestDTO, SetCookieTokenDTO, TokenValidationResultDTO
 
 
 class ITokenService(Protocol):
@@ -22,3 +22,9 @@ class ITokenService(Protocol):
         token: str
     ) -> dict[str, Any]:
         ...        
+        
+    def validate_token(
+        self,
+        token: str,
+    ) -> TokenValidationResultDTO:
+        ... 

@@ -1,11 +1,15 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from fastapi import Response
-from jose import jwt
+from jose import ExpiredSignatureError, jwt
 from Core.Application.Contracts.Identities.identity import ITokenService
-from Core.Application.DTOs.Identities.Commands.token import SetCookieTokenDTO, TokenRequestDTO, RefreshTokenRequestDTO
+from Core.Application.DTOs.Identities.Commands.token import SetCookieTokenDTO, TokenRequestDTO, RefreshTokenRequestDTO, TokenValidationError, TokenValidationResultDTO
 from Configs.Identities.identity import settings
-
+from jose.exceptions import (
+    ExpiredSignatureError,
+    JWTError,
+    JWTClaimsError,
+)
 
 class JWTTokenService(ITokenService):
 
@@ -20,7 +24,7 @@ class JWTTokenService(ITokenService):
         expiration = now + timedelta(minutes=self.access_expire_minutes)
         
         payload = {
-            "sub": request.user_id,
+            "sub": str(request.user_id),
             "exp": expiration,  
             "iat": now,
             "iss": "my-fastapi-app",
@@ -34,7 +38,7 @@ class JWTTokenService(ITokenService):
         expiration = now + timedelta(minutes=self.refresh_expire_minutes)
         
         payload = {
-            "sub": request.user_id,
+            "sub": str(request.user_id),
             "exp": expiration,
             "iat": now,
             "iss": "my-fastapi-app",
@@ -97,3 +101,59 @@ class JWTTokenService(ITokenService):
         )
 
         return payload
+
+    def validate_token(
+        self,
+        token: str
+    ) -> TokenValidationResultDTO:
+
+        try:
+            jwt.get_unverified_header(token)
+            jwt.get_unverified_claims(token)
+
+        except JWTError:
+            return TokenValidationResultDTO(
+                is_valid=False,
+                error=TokenValidationError.MALFORMED,
+                message="Token is malformed"
+            )
+
+        try:
+
+            payload = jwt.decode(
+                token,
+                self.secret_key,
+                algorithms=[self.algorithm],
+                issuer="my-fastapi-app"
+            )
+
+            return TokenValidationResultDTO(
+                is_valid=True,
+                error=None,
+                message=None,
+                payload=payload
+            )
+
+        except ExpiredSignatureError:
+
+            return TokenValidationResultDTO(
+                is_valid=False,
+                error=TokenValidationError.EXPIRED,
+                message="Token has expired"
+            )
+
+        except JWTClaimsError:
+
+            return TokenValidationResultDTO(
+                is_valid=False,
+                error=TokenValidationError.INVALID,
+                message="Token claims are invalid"
+            )
+
+        except JWTError:
+
+            return TokenValidationResultDTO(
+                is_valid=False,
+                error=TokenValidationError.TAMPERED,
+                message="Token signature is invalid or token has been tampered with"
+            )
