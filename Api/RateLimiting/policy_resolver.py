@@ -9,8 +9,6 @@ from Core.Domain.ViewModels.RateLimiting.rate_limit import (
     RateLimitPolicy,
 )
 
-
-
 class RateLimitPolicyResolver:
 
     def __init__(

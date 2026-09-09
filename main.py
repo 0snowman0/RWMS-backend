@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from Configs.RateLimiting.setup import configure_rate_limiting
 from Configs.api_config import setup_api
 
 app = FastAPI(
@@ -8,4 +9,5 @@ app = FastAPI(
     openapi_url=None,  
 )
 
+configure_rate_limiting(app)
 setup_api(app) 

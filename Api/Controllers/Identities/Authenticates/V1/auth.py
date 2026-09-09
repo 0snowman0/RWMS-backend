@@ -1,10 +1,13 @@
-# Api/Controllers/Identity/Auth/V1/Authenticates.py
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from Api.Configs.app_router import AppRouter
 from Core.Application.DTOs.Identities.Commands.token import RefreshTokenRequestDTO, SetCookieTokenDTO, TokenRequestDTO
 from Core.Application.Contracts.Identities.identity import ITokenService
 from Configs.dependencies import TokenServiceDependency, get_token_service  
 from jose import jwt
-router = APIRouter(tags=["Authenticates"])
+
+router = AppRouter(
+    tags=["Authenticates"]
+    )
 
 @router.post("/create-token")
 async def create_token(
@@ -29,8 +32,6 @@ async def create_refresh_token(
         "access_token": token,
         "token_type": "Bearer"
     }
-
-
 
 @router.post("/set-cookie")
 async def set_cookie(

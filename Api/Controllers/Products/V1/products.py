@@ -1,10 +1,14 @@
 from fastapi import APIRouter
 
-router = APIRouter(
+from Api.Configs.app_router import AppRouter
+from Api.RateLimiting.decorators import rate_limit
+
+router = AppRouter(
     tags=["Products"]
 )
 
 @router.get("/products")
+@rate_limit("login")
 def get_products():
     return {"version": "v1", "message": "Products API"}
 

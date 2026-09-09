@@ -2,17 +2,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from Api.Configs.app_router import AppRouter
 from Configs.dependencies import get_mapper, get_unit_of_work
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import IUnitOfWork
 from Core.Application.Contracts.Mapper.mapper import IMapper
 from Core.Application.DTOs.Users.Commands.user_test import UserCustomDto, UserDto
 from Core.Domain.Models.user import User
 
-router = APIRouter(
-    prefix="/tests",
-    tags=["Tests"],
+router = AppRouter(
+    prefix="/tests"
 )
-
 
 MapperDependency = Annotated[
     IMapper,

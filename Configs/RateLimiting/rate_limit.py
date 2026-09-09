@@ -5,7 +5,7 @@ from Core.Domain.ViewModels.RateLimiting.rate_limit import FixedWindowOptions, R
 DEFAULT_RATE_LIMIT_POLICY = RateLimitPolicy(
     name="default",
     options=FixedWindowOptions(
-        permit_limit=100,
+        permit_limit=5,
         window=timedelta(minutes=1),
     ),
 )
@@ -16,7 +16,7 @@ RATE_LIMIT_POLICIES: dict[str, RateLimitPolicy] = {
     "login": RateLimitPolicy(
         name="login",
         options=FixedWindowOptions(
-            permit_limit=5,
+            permit_limit=1,
             window=timedelta(minutes=1),
         ),
     ),

@@ -3,6 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
+from Api.Configs.app_router import AppRouter
+from Api.RateLimiting.decorators import rate_limit
 from Configs.dependencies import get_unit_of_work
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
@@ -11,7 +13,7 @@ from Core.Domain.Models.user import User
 
 
 
-router = APIRouter(
+router = AppRouter(
     tags=["Users"],
 )
 
