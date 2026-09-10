@@ -13,5 +13,4 @@ class PerformanceBehavior(
         request,
         next_handler: NextHandler,
     ):
-        print("PerformanceBehavior")
         return await next_handler()

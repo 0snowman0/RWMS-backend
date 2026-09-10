@@ -13,6 +13,6 @@ class ValidationBehavior(
         request,
         next_handler: NextHandler,
     ):
-        print("ValidationBehavior 1")
+
         return await next_handler()
     

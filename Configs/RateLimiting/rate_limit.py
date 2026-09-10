@@ -5,7 +5,7 @@ from Core.Domain.ViewModels.RateLimiting.rate_limit import FixedWindowOptions, R
 DEFAULT_RATE_LIMIT_POLICY = RateLimitPolicy(
     name="default",
     options=FixedWindowOptions(
-        permit_limit=5,
+        permit_limit=100,
         window=timedelta(minutes=1),
     ),
 )

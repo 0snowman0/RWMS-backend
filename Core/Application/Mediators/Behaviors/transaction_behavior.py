@@ -23,7 +23,6 @@ class TransactionBehavior(
         request,
         next_handler: NextHandler,
     ):
-        print("TransactionBehavior 1")
         async with self._uow:
 
             result = await next_handler()
@@ -31,4 +30,3 @@ class TransactionBehavior(
             await self._uow.save_changes()
 
             return result
-        print("TransactionBehavior 2")

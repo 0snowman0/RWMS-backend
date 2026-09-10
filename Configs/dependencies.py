@@ -1,3 +1,4 @@
+from Core.Application.Contracts.DataBases.DatabaseRoutines.database_routine_executor import IDatabaseRoutineExecutor
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import IUnitOfWork
 from Core.Application.Contracts.DependencyInjections.service_resolver import IServiceResolver
 from Core.Application.Contracts.Identities.identity import ITokenService
@@ -17,8 +18,11 @@ from Infrastructure.Mediators.behavior_factory import BehaviorFactory
 from Infrastructure.Mediators.handler_factory import HandlerFactory
 from Infrastructure.Mediators.mediator import Mediator
 from Infrastructure.Persistence.Configs.PGdatabase import get_db
+from Infrastructure.Persistence.DatabaseRoutines.postgres_routine_executor import PostgresRoutineExecutor
 from Infrastructure.Persistence.UnitOfWorks.unit_of_works import SqlAlchemyUnitOfWork
 
+# هر دپندنسی که اینجا اضافه میشه در get_service_resolver هم اضافه بشه 
+# برای اینکه بعدا بتونه ازش در  هندلر های مدیت آر استفاده بکنه 
 #-------------------------------------------
 
 def get_token_service() -> ITokenService:
@@ -39,6 +43,11 @@ def get_unit_of_work(
 ) -> IUnitOfWork:
     return SqlAlchemyUnitOfWork(session)
 
+UOWDependency = Annotated[
+        IUnitOfWork,
+        Depends(get_unit_of_work),
+]
+
 #-------------------------------------------
 
 _mapper = configure_mapper()
@@ -53,13 +62,32 @@ MapperDependency = Annotated[
 
 #-------------------------------------------
 
-def get_service_resolver(
-    uow: Annotated[
-        IUnitOfWork,
-        Depends(get_unit_of_work),
+def get_database_routine_executor(
+    session: Annotated[
+        AsyncSession,
+        Depends(get_db),
     ],
     mapper: MapperDependency,
+) -> IDatabaseRoutineExecutor:
+
+    return PostgresRoutineExecutor(
+        session=session,
+        mapper=mapper,
+    )
+
+
+DatabaseRoutineExecutorDependency = Annotated[
+    IDatabaseRoutineExecutor,
+    Depends(get_database_routine_executor),
+]
+
+#-------------------------------------------
+
+def get_service_resolver(
+    uow: UOWDependency,
+    mapper: MapperDependency,
     token_service: TokenServiceDependency,
+    routine_executor: DatabaseRoutineExecutorDependency,
 ) -> IServiceResolver:
 
     resolver = ServiceResolver()
@@ -78,7 +106,12 @@ def get_service_resolver(
         ITokenService,
         token_service,
     )
-
+    
+    resolver.add(
+        IDatabaseRoutineExecutor,
+        routine_executor,
+    )
+    
     return resolver
 
 
