@@ -6,6 +6,7 @@ class ResponseStatus(
     Enum,
 ):
     SUCCESS = "success"
+    CREATED = "created"
     FAILED = "failed"
     NOT_FOUND = "not_found"
     FORBIDDEN = "forbidden"
