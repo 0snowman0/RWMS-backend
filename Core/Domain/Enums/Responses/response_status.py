@@ -13,3 +13,4 @@ class ResponseStatus(
     UNAUTHORIZED = "unauthorized"
     VALIDATION_ERROR = "validation_error"
     CONFLICT = "conflict"
+    INTERNAL_SERVER_ERROR = "internal_server_error"

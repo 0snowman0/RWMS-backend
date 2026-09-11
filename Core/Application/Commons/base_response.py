@@ -162,3 +162,21 @@ class BaseResponse(
             data=None,
             status=ResponseStatus.CONFLICT,
         )
+        
+    # ---------------------------------------------------------
+    # Server Error
+    # ---------------------------------------------------------        
+    @classmethod
+    def internal_server_error(
+        cls,
+        message: str | None = None,
+        errors: list[str] | None = None,
+    ) -> "BaseResponse[T]":
+
+        return cls(
+            is_success=False,
+            message=message,
+            errors=errors or [],
+            data=None,
+            status=ResponseStatus.INTERNAL_SERVER_ERROR,
+        )        

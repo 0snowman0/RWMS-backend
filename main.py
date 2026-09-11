@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from Configs.ExceptionHandlers.exception_handler_config import configure_exception_handlers
 from Configs.Lifespans.application_lifespan import application_lifespan
 from Configs.Loggings.logging_config import configure_logging
 from Configs.Middlewares.middleware_config import configure_middlewares
@@ -23,5 +24,7 @@ configure_rate_limiting(app)
 configure_mediator(app)
 
 configure_middlewares(app)
+
+configure_exception_handlers(app)
 
 setup_api(app) 
