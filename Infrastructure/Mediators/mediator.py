@@ -1,10 +1,17 @@
+from typing import TypeVar
 
 from Core.Application.Contracts.Mediators.behavior_factory import IBehaviorFactory
 from Core.Application.Contracts.Mediators.behavior_registry import IBehaviorRegistry
 from Core.Application.Contracts.Mediators.handler_factory import IHandlerFactory
 from Core.Application.Contracts.Mediators.handler_registry import IHandlerRegistry
-from Core.Application.Contracts.Mediators.mediator import IMediator
+from Core.Application.Contracts.Mediators.mediator import (
+    IMediator,
+    IRequest,
+)
 from Core.Application.Mediators.behavior_policy_resolver import BehaviorPolicyResolver
+
+
+TResponse = TypeVar("TResponse")
 
 
 class Mediator(IMediator):
@@ -29,8 +36,9 @@ class Mediator(IMediator):
 
     async def send(
         self,
-        request,
-    ):
+        request: IRequest[TResponse],
+    ) -> TResponse:
+        
         # -------------------------
         # Handler
         # -------------------------

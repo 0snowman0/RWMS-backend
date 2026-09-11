@@ -1,3 +1,4 @@
+from Core.Application.Commons.base_response import BaseResponse
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
 )
@@ -22,7 +23,7 @@ from Core.Domain.Models.user import (
 class CreateUserCommandHandler(
     IRequestHandler[
         CreateUserCommand,
-        User,
+        BaseResponse[User],
     ]
 ):
 
@@ -37,7 +38,7 @@ class CreateUserCommandHandler(
     async def handle(
         self,
         request: CreateUserCommand,
-    ) -> User:
+    ) -> BaseResponse[User]:
 
         user = self._mapper.map(
             request.data,
@@ -48,4 +49,7 @@ class CreateUserCommandHandler(
             user
         )
 
-        return user
+        return BaseResponse[User].success(
+            data=user,
+            message="User created successfully.",
+        )

@@ -7,21 +7,44 @@ TRequest = TypeVar("TRequest")
 TResponse = TypeVar("TResponse")
 
 
+# ============================================================
+# Request
+# ============================================================
+
+class IRequest(
+    ABC,
+    Generic[TResponse],
+):
+    pass
+
+
+# ============================================================
+# Next Handler
+# ============================================================
+
 NextHandler = Callable[
     [],
     Awaitable[TResponse],
 ]
 
 
+# ============================================================
+# Mediator
+# ============================================================
+
 class IMediator(ABC):
 
     @abstractmethod
     async def send(
         self,
-        request: TRequest,
+        request: IRequest[TResponse],
     ) -> TResponse:
         pass
 
+
+# ============================================================
+# Request Handler
+# ============================================================
 
 class IRequestHandler(
     ABC,
@@ -35,6 +58,10 @@ class IRequestHandler(
     ) -> TResponse:
         pass
 
+
+# ============================================================
+# Pipeline Behavior
+# ============================================================
 
 class IPipelineBehavior(
     ABC,
