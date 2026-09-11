@@ -3,6 +3,7 @@ from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
 )
 
+from Core.Application.Contracts.Loggings.logger import ILogger
 from Core.Application.Contracts.Mapper.mapper import (
     IMapper,
 )
@@ -31,25 +32,62 @@ class CreateUserCommandHandler(
         self,
         uow: IUnitOfWork,
         mapper: IMapper,
+        logger: ILogger,
     ):
         self._uow = uow
         self._mapper = mapper
+        self._logger = logger
 
     async def handle(
         self,
         request: CreateUserCommand,
     ) -> BaseResponse[User]:
 
-        user = self._mapper.map(
-            request.data,
-            User,
+        self._logger.info(
+            "CreateUserCommand started.",
+            properties={
+                "email": request.data.email,
+            },
         )
 
-        await self._uow.users.add(
-            user
-        )
+        try:
 
-        return BaseResponse[User].success(
-            data=user,
-            message="User created successfully.",
-        )
+            user = self._mapper.map(
+                request.data,
+                User,
+            )
+
+            self._logger.debug(
+                "User DTO mapped to User entity.",
+                properties={
+                    "email": user.email,
+                },
+            )
+
+            await self._uow.users.add(
+                user
+            )
+
+            self._logger.info(
+                "User added to repository.",
+                properties={
+                    "email": user.email,
+                },
+            )
+
+            return BaseResponse[User].success(
+                data=user,
+                message="User created successfully.",
+            )
+
+        except Exception as ex:
+
+            self._logger.exception(
+                message="CreateUserCommand failed.",
+                exception=ex,
+                properties={
+                    "email": request.data.email,
+                },
+            )
+
+            raise

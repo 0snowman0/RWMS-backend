@@ -18,8 +18,6 @@ from Infrastructure.Persistence.Configs.model_loader import import_all_models
 
 import_all_models()
 
-print(Base.metadata.tables.keys())
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
