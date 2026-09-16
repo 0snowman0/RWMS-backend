@@ -1,5 +1,9 @@
 from typing import Protocol
 
+from Core.Application.Contracts.DataBases.Repositories.Categories.category_repository import (
+ ICategoryRepository   
+)
+ 
 from Core.Application.Contracts.DataBases.Repositories.Users.user_repository import (
     IUserRepository,
 )
@@ -9,6 +13,10 @@ class IUnitOfWork(Protocol):
 
     @property
     def users(self) -> IUserRepository:
+        ...
+
+    @property
+    def categories(self) -> ICategoryRepository:
         ...
 
     async def __aenter__(self) -> "IUnitOfWork":
