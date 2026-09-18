@@ -1,5 +1,3 @@
-from sqlalchemy import and_
-
 from Core.Application.Commons.base_response import (
     BaseResponse,
 )
@@ -48,23 +46,9 @@ class GetAllWaybillsQueryHandler(
         request: GetAllWaybillsQuery,
     ) -> BaseResponse[list[WaybillSummaryDto]]:
 
-        conditions = []
-
-        if request.status:
-            conditions.append(
-                Waybill.status == request.status.lower()
-            )
-
-        if request.priority:
-            conditions.append(
-                Waybill.priority == request.priority.lower()
-            )
-
         predicate = None
-        if len(conditions) == 1:
-            predicate = conditions[0]
-        elif len(conditions) > 1:
-            predicate = and_(*conditions)
+        if request.priority:
+            predicate = Waybill.priority == request.priority.lower()
 
         waybills = await self._uow.waybills.get_all(
             predicate=predicate

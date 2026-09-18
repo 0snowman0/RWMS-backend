@@ -18,9 +18,3 @@ class IWaybillRepository(
         waybill_number: str,
     ) -> Waybill | None:
         ...
-
-    async def get_by_status(
-        self,
-        status: str,
-    ) -> list[Waybill]:
-        ...

@@ -4,20 +4,23 @@ from Core.Application.Commons.base_response import (
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
 )
-from Core.Application.Contracts.Mapper.mapper import (
-    IMapper,
-)
 from Core.Application.Contracts.Mediators.mediator import (
     IRequestHandler,
 )
 from Core.Application.DTOs.Waybills.waybill import (
     WaybillDto,
 )
+from Core.Application.Features.Waybills.Helpers.waybill_dto_builder import (
+    build_waybill_dto,
+)
 from Core.Application.Features.Waybills.Requests.Queries.get_waybill_by_id import (
     GetWaybillByIdQuery,
 )
 from Core.Application.Mediators.handler_decorators import (
     handler_for,
+)
+from Core.Domain.Models.WaybillTemplates.waybill_template import (
+    WaybillTemplate,
 )
 from Core.Domain.Models.Waybills.waybill import (
     Waybill,
@@ -35,11 +38,9 @@ class GetWaybillByIdQueryHandler(
     def __init__(
         self,
         uow: IUnitOfWork,
-        mapper: IMapper,
     ) -> None:
 
         self._uow = uow
-        self._mapper = mapper
 
     async def handle(
         self,
@@ -55,9 +56,14 @@ class GetWaybillByIdQueryHandler(
                 message="Waybill not found.",
             )
 
-        waybill_dto = self._mapper.map(
-            waybill,
-            WaybillDto,
+        if waybill.template is None:
+            template = await self._uow.waybill_templates.get(
+                WaybillTemplate.id == waybill.template_id
+            )
+            waybill.template = template
+
+        waybill_dto = build_waybill_dto(
+            waybill
         )
 
         return BaseResponse[WaybillDto].success(

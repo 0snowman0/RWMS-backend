@@ -1,6 +1,7 @@
 from Core.Application.DTOs.Waybills.waybill import (
+    CreateWaybillDto,
+    UpdateWaybillDto,
     WaybillDto,
-    WaybillItemDto,
     WaybillSummaryDto,
 )
 from Core.Application.Mapping.mapper import (
@@ -11,9 +12,6 @@ from Core.Application.Mapping.mapping_profile import (
 )
 from Core.Domain.Models.Waybills.waybill import (
     Waybill,
-)
-from Core.Domain.Models.Waybills.waybill_item import (
-    WaybillItem,
 )
 
 
@@ -37,6 +35,11 @@ class WaybillMappingProfile(
         )
 
         mapper.create_map(
-            WaybillItem,
-            WaybillItemDto,
-        )
+            CreateWaybillDto,
+            Waybill,
+        ).ignore("attributes")
+
+        mapper.create_map(
+            UpdateWaybillDto,
+            Waybill,
+        ).ignore("attributes")

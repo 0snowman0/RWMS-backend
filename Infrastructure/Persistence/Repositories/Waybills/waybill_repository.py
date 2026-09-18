@@ -32,12 +32,3 @@ class WaybillRepository(
         return await self.get(
             Waybill.waybill_number == waybill_number
         )
-
-    async def get_by_status(
-        self,
-        status: str,
-    ) -> list[Waybill]:
-
-        return await self.get_all(
-            Waybill.status == status
-        )

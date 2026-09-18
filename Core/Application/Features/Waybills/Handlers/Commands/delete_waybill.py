@@ -13,9 +13,6 @@ from Core.Application.Features.Waybills.Requests.Commands.delete_waybill import 
 from Core.Application.Mediators.handler_decorators import (
     handler_for,
 )
-from Core.Domain.Enums.Waybills.waybill_status import (
-    WaybillStatus,
-)
 from Core.Domain.Models.Waybills.waybill import (
     Waybill,
 )
@@ -48,20 +45,6 @@ class DeleteWaybillCommandHandler(
         if waybill is None:
             return BaseResponse[bool].not_found(
                 message="Waybill not found.",
-            )
-
-        # Only REGISTERED and CANCELLED waybills can be deleted
-        deletable_statuses = [
-            WaybillStatus.REGISTERED.value,
-            WaybillStatus.CANCELLED.value,
-        ]
-
-        if waybill.status not in deletable_statuses:
-            return BaseResponse[bool].validation_error(
-                message=(
-                    f"Cannot delete waybill in '{waybill.status}' status. "
-                    "Only 'registered' or 'cancelled' waybills can be deleted."
-                ),
             )
 
         await self._uow.waybills.delete(

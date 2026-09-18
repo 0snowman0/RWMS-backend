@@ -10,7 +10,6 @@ from Configs.dependencies import (
 from Core.Application.DTOs.Waybills.waybill import (
     CreateWaybillDto,
     UpdateWaybillDto,
-    UpdateWaybillStatusDto,
 )
 from Core.Application.Features.Waybills.Requests.Commands.create_waybill import (
     CreateWaybillCommand,
@@ -21,17 +20,11 @@ from Core.Application.Features.Waybills.Requests.Commands.delete_waybill import 
 from Core.Application.Features.Waybills.Requests.Commands.update_waybill import (
     UpdateWaybillCommand,
 )
-from Core.Application.Features.Waybills.Requests.Commands.update_waybill_status import (
-    UpdateWaybillStatusCommand,
-)
 from Core.Application.Features.Waybills.Requests.Queries.get_all_waybills import (
     GetAllWaybillsQuery,
 )
 from Core.Application.Features.Waybills.Requests.Queries.get_waybill_by_id import (
     GetWaybillByIdQuery,
-)
-from Core.Application.Features.Waybills.Requests.Queries.get_waybills_by_status import (
-    GetWaybillsByStatusQuery,
 )
 
 
@@ -65,11 +58,9 @@ async def create_waybill(
 )
 async def get_all_waybills(
     mediator: MediatorDependency,
-    status: str | None = None,
     priority: str | None = None,
 ):
     query = GetAllWaybillsQuery(
-        status=status,
         priority=priority,
     )
 
@@ -124,28 +115,6 @@ async def update_waybill(
     )
 
 
-@router.patch(
-    "/{waybill_id}/status",
-)
-async def update_waybill_status(
-    waybill_id: int,
-    request: UpdateWaybillStatusDto,
-    mediator: MediatorDependency,
-):
-    command = UpdateWaybillStatusCommand(
-        waybill_id=waybill_id,
-        data=request,
-    )
-
-    result = await mediator.send(
-        command,
-    )
-
-    return to_api_response(
-        result=result,
-    )
-
-
 @router.delete(
     "/{waybill_id}",
 )
@@ -159,26 +128,6 @@ async def delete_waybill(
 
     result = await mediator.send(
         command,
-    )
-
-    return to_api_response(
-        result=result,
-    )
-
-
-@router.get(
-    "/by-status/{status}",
-)
-async def get_waybills_by_status(
-    status: str,
-    mediator: MediatorDependency,
-):
-    query = GetWaybillsByStatusQuery(
-        status=status,
-    )
-
-    result = await mediator.send(
-        query,
     )
 
     return to_api_response(

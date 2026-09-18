@@ -21,29 +21,31 @@ from sqlalchemy.orm import (
 from Core.Domain.Enums.Waybills.waybill_priority import (
     WaybillPriority,
 )
-from Core.Domain.Enums.Waybills.waybill_status import (
-    WaybillStatus,
-)
 from Core.Domain.Models.Base.base_models import (
     Base,
 )
 from Core.Domain.Models.WaybillTemplates.waybill_template import (
     WaybillTemplate,
 )
-from Core.Domain.Models.Waybills.waybill_item import (
-    WaybillItem,
+from Core.Domain.ViewModels.ValueObjects.Waybills.waybill_attribute_value import (
+    WaybillAttributeValue,
 )
 
 
 class Waybill(Base):
 
     # =========================================================
-    # Identity
+    # Basic / Identity
     # =========================================================
 
-    waybill_number: Mapped[str] = mapped_column(
-        String(100),
+    name: Mapped[str] = mapped_column(
+        String(255),
         nullable=False,
+    )
+
+    waybill_number: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
         unique=True,
     )
 
@@ -61,9 +63,9 @@ class Waybill(Base):
     # Dates
     # =========================================================
 
-    waybill_date: Mapped[date] = mapped_column(
+    waybill_date: Mapped[date | None] = mapped_column(
         Date,
-        nullable=False,
+        nullable=True,
     )
 
     received_date: Mapped[date | None] = mapped_column(
@@ -75,9 +77,9 @@ class Waybill(Base):
     # Sender
     # =========================================================
 
-    sender_name: Mapped[str] = mapped_column(
+    sender_name: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
     sender_contact: Mapped[str | None] = mapped_column(
@@ -89,9 +91,9 @@ class Waybill(Base):
     # Receiver
     # =========================================================
 
-    receiver_name: Mapped[str] = mapped_column(
+    receiver_name: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
     receiver_contact: Mapped[str | None] = mapped_column(
@@ -103,14 +105,14 @@ class Waybill(Base):
     # Location
     # =========================================================
 
-    origin: Mapped[str] = mapped_column(
+    origin: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
-    destination: Mapped[str] = mapped_column(
+    destination: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
     # =========================================================
@@ -141,25 +143,14 @@ class Waybill(Base):
     # Totals
     # =========================================================
 
-    total_items_count: Mapped[int | None] = mapped_column(
-        Integer,
-        nullable=True,
-    )
-
     total_weight: Mapped[float | None] = mapped_column(
         Numeric(12, 3),
         nullable=True,
     )
 
     # =========================================================
-    # Status & Priority
+    # Priority
     # =========================================================
-
-    status: Mapped[str] = mapped_column(
-        String(30),
-        nullable=False,
-        default=WaybillStatus.REGISTERED.value,
-    )
 
     priority: Mapped[str] = mapped_column(
         String(20),
@@ -182,32 +173,47 @@ class Waybill(Base):
     )
 
     # =========================================================
-    # Dynamic Fields (values, not schema)
+    # Dynamic Attributes (stored as JSONB list of values)
     # =========================================================
 
-    _dynamic_fields: Mapped[
-        dict[str, Any]
+    _attributes: Mapped[
+        list[dict[str, Any]]
     ] = mapped_column(
-        "dynamic_fields",
+        "attributes",
         JSONB,
         nullable=False,
-        default=dict,
+        default=list,
     )
 
     @property
-    def dynamic_fields(
+    def attributes(
         self,
-    ) -> dict[str, Any]:
-        if not self._dynamic_fields:
-            return {}
-        return self._dynamic_fields
+    ) -> list[
+        WaybillAttributeValue
+    ]:
+        if not self._attributes:
+            return []
 
-    @dynamic_fields.setter
-    def dynamic_fields(
+        return [
+            WaybillAttributeValue.model_validate(
+                item
+            )
+            for item in self._attributes
+        ]
+
+    @attributes.setter
+    def attributes(
         self,
-        value: dict[str, Any],
+        value: list[
+            WaybillAttributeValue
+        ],
     ) -> None:
-        self._dynamic_fields = value or {}
+        self._attributes = [
+            item.model_dump(
+                mode="json",
+            )
+            for item in value
+        ]
 
     # =========================================================
     # Audit
@@ -225,11 +231,4 @@ class Waybill(Base):
     template: Mapped[WaybillTemplate] = relationship(
         "WaybillTemplate",
         lazy="joined",
-    )
-
-    items: Mapped[list[WaybillItem]] = relationship(
-        "WaybillItem",
-        back_populates="waybill",
-        cascade="all, delete-orphan",
-        lazy="selectin",
     )

@@ -30,6 +30,4 @@ class GetAllWaybillsQuery(
     ]
 ):
 
-    status: str | None = None
-
     priority: str | None = None
