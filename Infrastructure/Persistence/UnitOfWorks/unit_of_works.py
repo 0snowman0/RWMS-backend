@@ -62,7 +62,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     ) -> IProductRepository:
         return self._products
 
-
+    @property
     def waybill_templates(
         self,
     ) -> IWaybillTemplateRepository:
