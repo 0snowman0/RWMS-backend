@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from Core.Application.Contracts.DataBases.Repositories.Categories.category_repository import ICategoryRepository
+from Core.Application.Contracts.DataBases.Repositories.Products.product_repository import IProductRepository
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
 )
@@ -9,6 +10,7 @@ from Core.Application.Contracts.DataBases.Repositories.Users.user_repository imp
 )
 
 from Infrastructure.Persistence.Repositories.Categories.category_repository import CategoryRepository
+from Infrastructure.Persistence.Repositories.Products.product_repository import ProductRepository
 from Infrastructure.Persistence.Repositories.Users.user_repository import (
     UserRepository,
 )
@@ -30,6 +32,10 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
             session=session,
         )
         
+        self._products = ProductRepository(
+            session=session,
+        )
+        
     @property
     def users(self) -> IUserRepository:
         return self._users
@@ -38,8 +44,15 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     def categories(
         self,
     ) -> ICategoryRepository:
-
         return self._categories
+
+    @property
+    def products(
+        self,
+    ) -> IProductRepository:
+        return self._products
+
+
     async def __aenter__(self) -> "SqlAlchemyUnitOfWork":
         return self
 

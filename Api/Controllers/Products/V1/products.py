@@ -1,21 +1,119 @@
-from fastapi import APIRouter
-
-from Api.Configs.app_router import AppRouter
-from Api.RateLimiting.decorators import rate_limit
-
-router = AppRouter(
-    tags=["Products"]
+from Api.Configs.app_router import (
+    AppRouter,
 )
 
-@router.get("/products")
-@rate_limit("login")
-def get_products():
-    return {"version": "v1", "message": "Products API"}
+from Configs.dependencies import (
+    MediatorDependency,
+)
+
+from Core.Application.DTOs.Products.product import (
+    CreateProductDto,
+    UpdateProductDto,
+)
+
+from Core.Application.Features.Products.Requests.Commands.create_product import (
+    CreateProductCommand,
+)
+
+from Core.Application.Features.Products.Requests.Commands.update_product import (
+    UpdateProductCommand,
+)
+
+from Core.Application.Features.Products.Requests.Commands.delete_product import (
+    DeleteProductCommand,
+)
+
+from Core.Application.Features.Products.Requests.Queries.get_product_by_id import (
+    GetProductByIdQuery,
+)
 
 
-@router.get("/products/{product_id}")
-def get_product(product_id: int):
+router = AppRouter(
+    tags=["product"]
+)
+
+
+@router.post(
+    "/create",
+)
+async def create_product(
+    request: CreateProductDto,
+    mediator: MediatorDependency,
+):
+
+    command = CreateProductCommand(
+        data=request,
+    )
+
+    result = await mediator.send(
+        command
+    )
+
     return {
-        "version": "v1",
-        "product_id": product_id,
+        "is_success": result.is_success,
+        "message": result.message,
+        "errors": result.errors,
+        "status": result.status,
     }
+
+@router.get(
+    "/{product_id}",
+)
+async def get_product_by_id(
+    product_id: int,
+    mediator: MediatorDependency,
+):
+
+    query = GetProductByIdQuery(
+        product_id=product_id,
+    )
+
+    result = await mediator.send(
+        query
+    )
+
+    return result
+
+@router.put(
+    "/{product_id}",
+)
+async def update_product(
+    product_id: int,
+    request: UpdateProductDto,
+    mediator: MediatorDependency,
+):
+
+    command = UpdateProductCommand(
+        product_id=product_id,
+        data=request,
+    )
+
+    result = await mediator.send(
+        command
+    )
+
+    return {
+        "is_success": result.is_success,
+        "message": result.message,
+        "errors": result.errors,
+        "status": result.status,
+    }
+
+
+@router.delete(
+    "/{product_id}",
+)
+async def delete_product(
+    product_id: int,
+    mediator: MediatorDependency,
+):
+
+    command = DeleteProductCommand(
+        product_id=product_id,
+    )
+
+    result = await mediator.send(
+        command
+    )
+
+    return result
