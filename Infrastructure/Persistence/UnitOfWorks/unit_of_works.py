@@ -2,6 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from Core.Application.Contracts.DataBases.Repositories.Categories.category_repository import ICategoryRepository
 from Core.Application.Contracts.DataBases.Repositories.Products.product_repository import IProductRepository
+from Core.Application.Contracts.DataBases.Repositories.WaybillTemplates.waybill_template_repository import (
+    IWaybillTemplateRepository,
+)
 from Core.Application.Contracts.DataBases.UnitOfWorks.unit_of_works import (
     IUnitOfWork,
 )
@@ -11,6 +14,9 @@ from Core.Application.Contracts.DataBases.Repositories.Users.user_repository imp
 
 from Infrastructure.Persistence.Repositories.Categories.category_repository import CategoryRepository
 from Infrastructure.Persistence.Repositories.Products.product_repository import ProductRepository
+from Infrastructure.Persistence.Repositories.WaybillTemplates.waybill_template_repository import (
+    WaybillTemplateRepository,
+)
 from Infrastructure.Persistence.Repositories.Users.user_repository import (
     UserRepository,
 )
@@ -29,6 +35,10 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         )
 
         self._categories = CategoryRepository(
+            session=session,
+        )
+
+        self._waybill_templates = WaybillTemplateRepository(
             session=session,
         )
         
@@ -53,6 +63,11 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         return self._products
 
 
+    def waybill_templates(
+        self,
+    ) -> IWaybillTemplateRepository:
+
+        return self._waybill_templates
     async def __aenter__(self) -> "SqlAlchemyUnitOfWork":
         return self
 
