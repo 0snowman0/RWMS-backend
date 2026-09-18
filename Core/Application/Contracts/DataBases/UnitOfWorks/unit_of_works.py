@@ -7,6 +7,7 @@ from Core.Application.Contracts.DataBases.Repositories.WaybillTemplates.waybill_
     IWaybillTemplateRepository,
 )
  
+from Core.Application.Contracts.DataBases.Repositories.Products.product_repository import IProductRepository
 from Core.Application.Contracts.DataBases.Repositories.Users.user_repository import (
     IUserRepository,
 )
@@ -21,6 +22,13 @@ class IUnitOfWork(Protocol):
     @property
     def categories(self) -> ICategoryRepository:
         ...
+    
+    @property
+    def products(
+        self,
+    ) -> IProductRepository:
+        ...
+    
 
     @property
     def waybill_templates(self) -> IWaybillTemplateRepository:

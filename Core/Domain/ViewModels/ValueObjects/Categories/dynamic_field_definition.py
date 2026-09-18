@@ -1,10 +1,15 @@
 from decimal import Decimal
 from typing import Any
+from uuid import uuid4
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+)
+from uuid import (
+    UUID,
+    uuid4,
 )
 
 from Core.Domain.Enums.Categories.dynamic_field_type import (
@@ -26,6 +31,16 @@ class DynamicFieldDefinition(
     # =========================================================
     # Basic
     # =========================================================
+    field_id: UUID = Field(
+        default_factory=uuid4
+    )
+    # شناسه یکتای دائمی این فیلد
+    # هنگام ایجاد فیلد به صورت خودکار تولید می‌شود
+    # این شناسه حتی اگر name یا title فیلد تغییر کند
+    # باید ثابت باقی بماند
+    #
+    # Product در آینده مقدار این فیلد را
+    # با استفاده از همین field_id ذخیره خواهد کرد
 
     name: str
     # نام داخلی فیلد برای استفاده در کد و ذخیره مقدار

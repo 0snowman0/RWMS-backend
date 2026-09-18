@@ -35,7 +35,7 @@ async def create_category(
     result = await mediator.send(
         command
     )
-
+    result.data = result.data.id
     return to_api_response(
         result=result
     )
