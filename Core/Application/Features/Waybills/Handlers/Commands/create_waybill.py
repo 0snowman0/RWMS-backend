@@ -50,7 +50,7 @@ class CreateWaybillCommandHandler(
         request: CreateWaybillCommand,
     ) -> BaseResponse[WaybillDto]:
 
-        # 1. Validate template exists and is active
+    
         template = await self._uow.waybill_templates.get(
             WaybillTemplate.id == request.data.template_id
         )
@@ -65,7 +65,7 @@ class CreateWaybillCommandHandler(
                 message="Waybill template is not active.",
             )
 
-        # 2. Check waybill_number uniqueness if provided
+        
         if request.data.waybill_number:
             existing = await self._uow.waybills.get_by_waybill_number(
                 request.data.waybill_number
@@ -75,7 +75,7 @@ class CreateWaybillCommandHandler(
                     message="Waybill with this number already exists.",
                 )
 
-        # 3. Validate attributes if provided (required fields not enforced in initial creation if draft)
+        
         attributes = request.data.attributes
         if attributes:
             errors, final_attributes = validate_waybill_attributes(
@@ -90,7 +90,7 @@ class CreateWaybillCommandHandler(
                 )
             attributes = final_attributes
 
-        # 4. Create Waybill entity
+       
         waybill = Waybill(
             name=request.data.name,
             template_id=request.data.template_id,

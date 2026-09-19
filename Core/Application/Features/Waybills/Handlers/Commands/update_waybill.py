@@ -64,7 +64,7 @@ class UpdateWaybillCommandHandler(
                 message="Waybill not found.",
             )
 
-        # Template resolution
+        
         target_template_id = request.data.template_id or waybill.template_id
         template = await self._uow.waybill_templates.get(
             WaybillTemplate.id == target_template_id
@@ -75,7 +75,7 @@ class UpdateWaybillCommandHandler(
                 message="Waybill template not found.",
             )
 
-        # Dynamic attributes validation
+        
         attributes = request.data.attributes
         if attributes:
             errors, final_attributes = validate_waybill_attributes(
@@ -90,7 +90,7 @@ class UpdateWaybillCommandHandler(
                 )
             waybill.attributes = final_attributes
 
-        # Check waybill_number uniqueness if changed
+        
         if request.data.waybill_number and request.data.waybill_number != waybill.waybill_number:
             existing = await self._uow.waybills.get_by_waybill_number(
                 request.data.waybill_number
@@ -100,7 +100,7 @@ class UpdateWaybillCommandHandler(
                     message="Waybill with this number already exists.",
                 )
 
-        # Map fixed fields using AutoMapper
+        
         self._mapper.map_to(
             request.data,
             waybill,
