@@ -3,6 +3,9 @@ from Core.Application.Mapping.mapping_profile import MappingProfile
 from Core.Application.Mapping.Profiles.user_mapping_profile import (
     UserMappingProfile,
 )
+from Core.Application.Mapping.Profiles.waybill_mapping_profile import (
+    WaybillMappingProfile,
+)
 from Core.Application.Mapping.Profiles.waybill_template_mapping_profile import (
     WaybillTemplateMappingProfile,
 )
@@ -15,6 +18,7 @@ def configure_mapper() -> Mapper:
     profiles: list[MappingProfile] = [
         UserMappingProfile(),
         WaybillTemplateMappingProfile(),
+        WaybillMappingProfile(),
     ]
 
     for profile in profiles:
