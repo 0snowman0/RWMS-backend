@@ -21,6 +21,9 @@ from sqlalchemy.orm import (
 from Core.Domain.Enums.Waybills.waybill_priority import (
     WaybillPriority,
 )
+from Core.Domain.Enums.Waybills.waybill_status import (
+    WaybillStatus,
+)
 from Core.Domain.Models.Base.base_models import (
     Base,
 )
@@ -149,8 +152,14 @@ class Waybill(Base):
     )
 
     # =========================================================
-    # Priority
+    # Status & Priority
     # =========================================================
+
+    status: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+        default=WaybillStatus.REGISTERED.value,
+    )
 
     priority: Mapped[str] = mapped_column(
         String(20),

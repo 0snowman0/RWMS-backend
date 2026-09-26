@@ -58,9 +58,11 @@ async def create_waybill(
 )
 async def get_all_waybills(
     mediator: MediatorDependency,
+    status: str | None = None,
     priority: str | None = None,
 ):
     query = GetAllWaybillsQuery(
+        status=status,
         priority=priority,
     )
 

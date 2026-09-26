@@ -46,9 +46,18 @@ class GetAllWaybillsQueryHandler(
         request: GetAllWaybillsQuery,
     ) -> BaseResponse[list[WaybillSummaryDto]]:
 
-        predicate = None
+        conditions = []
+        if request.status:
+            conditions.append(Waybill.status == request.status.lower())
         if request.priority:
-            predicate = Waybill.priority == request.priority.lower()
+            conditions.append(Waybill.priority == request.priority.lower())
+
+        predicate = None
+        if len(conditions) == 1:
+            predicate = conditions[0]
+        elif len(conditions) > 1:
+            from sqlalchemy import and_
+            predicate = and_(*conditions)
 
         waybills = await self._uow.waybills.get_all(
             predicate=predicate
