@@ -109,6 +109,7 @@ class CreateWaybillCommandHandler(
             driver_contact=request.data.driver_contact,
             total_weight=request.data.total_weight,
             priority=request.data.priority,
+            status=request.data.status,
             description=request.data.description,
             internal_notes=request.data.internal_notes,
         )

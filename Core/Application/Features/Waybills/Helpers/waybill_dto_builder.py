@@ -64,6 +64,7 @@ def build_waybill_dto(
         waybill_number=waybill.waybill_number,
         template_id=waybill.template_id,
         template=template_dto,
+        status=waybill.status,
         priority=waybill.priority,
         waybill_date=waybill.waybill_date,
         received_date=waybill.received_date,

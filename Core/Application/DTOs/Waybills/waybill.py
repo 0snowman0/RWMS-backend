@@ -10,6 +10,9 @@ from pydantic import (
 from Core.Domain.Enums.Waybills.waybill_priority import (
     WaybillPriority,
 )
+from Core.Domain.Enums.Waybills.waybill_status import (
+    WaybillStatus,
+)
 from Core.Domain.ViewModels.ValueObjects.Categories.dynamic_field_definition import (
     DynamicFieldDefinition,
 )
@@ -64,6 +67,7 @@ class CreateWaybillDto(
     driver_contact: str | None = None
     total_weight: float | None = None
     priority: str = WaybillPriority.NORMAL.value
+    status: str = WaybillStatus.REGISTERED.value
     description: str | None = None
     internal_notes: str | None = None
     attributes: list[WaybillAttributeValue] = Field(
@@ -92,6 +96,7 @@ class UpdateWaybillDto(
     driver_contact: str | None = None
     total_weight: float | None = None
     priority: str = WaybillPriority.NORMAL.value
+    status: str | None = None
     description: str | None = None
     internal_notes: str | None = None
     attributes: list[WaybillAttributeValue] = Field(
@@ -117,6 +122,7 @@ class WaybillDto(
     template_id: int
     template: WaybillTemplateReferenceDto | None = None
     priority: str = WaybillPriority.NORMAL.value
+    status: str = WaybillStatus.REGISTERED.value
     waybill_date: date | None = None
     received_date: date | None = None
     sender_name: str | None = None
@@ -159,4 +165,5 @@ class WaybillSummaryDto(
     origin: str | None = None
     destination: str | None = None
     priority: str
+    status: str
     created_at: datetime | None = None
