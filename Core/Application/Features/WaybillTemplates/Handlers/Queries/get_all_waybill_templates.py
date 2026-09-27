@@ -22,9 +22,6 @@ from Core.Application.Features.WaybillTemplates.Requests.Queries.get_all_waybill
 from Core.Application.Mediators.handler_decorators import (
     handler_for,
 )
-from Core.Domain.Models.WaybillTemplates.waybill_template import (
-    WaybillTemplate,
-)
 
 
 @handler_for(GetAllWaybillTemplatesQuery)
@@ -49,12 +46,7 @@ class GetAllWaybillTemplatesQueryHandler(
         request: GetAllWaybillTemplatesQuery,
     ) -> BaseResponse[PagedResultDto[WaybillTemplateSummaryDto]]:
 
-        predicate = None
-        if not request.include_inactive:
-            predicate = (WaybillTemplate.is_active == True)
-
         paged_templates = await self._uow.waybill_templates.get_paged(
-            predicate=predicate,
             pagination_params=request.pagination,
         )
 

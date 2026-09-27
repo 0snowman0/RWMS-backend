@@ -3,6 +3,7 @@ from typing import Any
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
 )
 
@@ -80,6 +81,28 @@ class ProductDto(
 
     fields: list[
         ProductDynamicFieldDto
+    ] = Field(
+        default_factory=list
+    )
+
+    created_at: datetime
+
+    updated_at: datetime
+
+
+class ProductSummaryDto(
+    BaseModel,
+):
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+    id: int
+
+    name: str
+
+    categories: list[
+        ProductCategoryDto
     ] = Field(
         default_factory=list
     )

@@ -37,5 +37,3 @@ class GetAllWaybillsQuery(
     pagination: PagedRequestDto[None] = field(
         default_factory=lambda: PagedRequestDto[None]()
     )
-    status: str | None = None
-    priority: str | None = None

@@ -11,7 +11,7 @@ from Core.Application.Contracts.Mediators.mediator import (
     IRequestHandler,
 )
 from Core.Application.DTOs.Categories.category import (
-    CategoryDto,
+    CategorySummaryDto,
 )
 from Core.Application.DTOs.Common.pagination_dto import (
     PagedResultDto,
@@ -28,7 +28,7 @@ from Core.Application.Mediators.handler_decorators import (
 class GetPagedCategoriesQueryHandler(
     IRequestHandler[
         GetPagedCategoriesQuery,
-        BaseResponse[PagedResultDto[CategoryDto]],
+        BaseResponse[PagedResultDto[CategorySummaryDto]],
     ]
 ):
 
@@ -44,7 +44,7 @@ class GetPagedCategoriesQueryHandler(
     async def handle(
         self,
         request: GetPagedCategoriesQuery,
-    ) -> BaseResponse[PagedResultDto[CategoryDto]]:
+    ) -> BaseResponse[PagedResultDto[CategorySummaryDto]]:
 
         paged_entities = await self._uow.categories.get_paged(
             pagination_params=request.pagination,
@@ -52,17 +52,17 @@ class GetPagedCategoriesQueryHandler(
 
         category_dtos = self._mapper.map_list(
             paged_entities.items,
-            CategoryDto,
+            CategorySummaryDto,
         )
 
-        paged_result = PagedResultDto[CategoryDto].create(
+        paged_result = PagedResultDto[CategorySummaryDto].create(
             items=category_dtos,
             total_count=paged_entities.total_count,
             page_number=paged_entities.page_number,
             page_size=paged_entities.page_size,
         )
 
-        return BaseResponse[PagedResultDto[CategoryDto]].success(
+        return BaseResponse[PagedResultDto[CategorySummaryDto]].success(
             data=paged_result,
             message="Categories retrieved successfully.",
         )

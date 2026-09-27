@@ -22,9 +22,6 @@ from Core.Application.Features.Waybills.Requests.Queries.get_all_waybills import
 from Core.Application.Mediators.handler_decorators import (
     handler_for,
 )
-from Core.Domain.Models.Waybills.waybill import (
-    Waybill,
-)
 
 
 @handler_for(GetAllWaybillsQuery)
@@ -49,21 +46,7 @@ class GetAllWaybillsQueryHandler(
         request: GetAllWaybillsQuery,
     ) -> BaseResponse[PagedResultDto[WaybillSummaryDto]]:
 
-        conditions = []
-        if request.status:
-            conditions.append(Waybill.status == request.status.lower())
-        if request.priority:
-            conditions.append(Waybill.priority == request.priority.lower())
-
-        predicate = None
-        if len(conditions) == 1:
-            predicate = conditions[0]
-        elif len(conditions) > 1:
-            from sqlalchemy import and_
-            predicate = and_(*conditions)
-
         paged_waybills = await self._uow.waybills.get_paged(
-            predicate=predicate,
             pagination_params=request.pagination,
         )
 

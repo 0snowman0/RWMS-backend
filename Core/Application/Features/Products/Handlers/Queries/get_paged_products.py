@@ -11,10 +11,10 @@ from Core.Application.DTOs.Common.pagination_dto import (
     PagedResultDto,
 )
 from Core.Application.DTOs.Products.product import (
-    ProductDto,
+    ProductSummaryDto,
 )
 from Core.Application.Features.Products.Helpers.product_dto_builder import (
-    build_product_dto,
+    build_product_summary_dto,
 )
 from Core.Application.Features.Products.Requests.Queries.get_paged_products import (
     GetPagedProductsQuery,
@@ -28,7 +28,7 @@ from Core.Application.Mediators.handler_decorators import (
 class GetPagedProductsQueryHandler(
     IRequestHandler[
         GetPagedProductsQuery,
-        BaseResponse[PagedResultDto[ProductDto]],
+        BaseResponse[PagedResultDto[ProductSummaryDto]],
     ]
 ):
 
@@ -42,25 +42,25 @@ class GetPagedProductsQueryHandler(
     async def handle(
         self,
         request: GetPagedProductsQuery,
-    ) -> BaseResponse[PagedResultDto[ProductDto]]:
+    ) -> BaseResponse[PagedResultDto[ProductSummaryDto]]:
 
         paged_products = await self._uow.products.get_paged(
             pagination_params=request.pagination,
         )
 
         dtos = [
-            build_product_dto(product)
+            build_product_summary_dto(product)
             for product in paged_products.items
         ]
 
-        paged_result = PagedResultDto[ProductDto].create(
+        paged_result = PagedResultDto[ProductSummaryDto].create(
             items=dtos,
             total_count=paged_products.total_count,
             page_number=paged_products.page_number,
             page_size=paged_products.page_size,
         )
 
-        return BaseResponse[PagedResultDto[ProductDto]].success(
+        return BaseResponse[PagedResultDto[ProductSummaryDto]].success(
             data=paged_result,
             message="Products retrieved successfully.",
         )

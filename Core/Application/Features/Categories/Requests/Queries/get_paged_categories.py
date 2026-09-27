@@ -7,7 +7,7 @@ from Core.Application.Contracts.Mediators.mediator import (
     IRequest,
 )
 from Core.Application.DTOs.Categories.category import (
-    CategoryDto,
+    CategorySummaryDto,
 )
 from Core.Application.DTOs.Common.pagination_dto import (
     PagedRequestDto,
@@ -30,7 +30,7 @@ from Core.Domain.Enums.Mediators.mediator import (
 )
 class GetPagedCategoriesQuery(
     IRequest[
-        BaseResponse[PagedResultDto[CategoryDto]]
+        BaseResponse[PagedResultDto[CategorySummaryDto]]
     ]
 ):
 

@@ -37,4 +37,3 @@ class GetAllWaybillTemplatesQuery(
     pagination: PagedRequestDto[None] = field(
         default_factory=lambda: PagedRequestDto[None]()
     )
-    include_inactive: bool = False

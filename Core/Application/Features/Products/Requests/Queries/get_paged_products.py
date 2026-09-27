@@ -11,7 +11,7 @@ from Core.Application.DTOs.Common.pagination_dto import (
     PagedResultDto,
 )
 from Core.Application.DTOs.Products.product import (
-    ProductDto,
+    ProductSummaryDto,
 )
 from Core.Application.Mediators.decorators import (
     request_type,
@@ -30,7 +30,7 @@ from Core.Domain.Enums.Mediators.mediator import (
 )
 class GetPagedProductsQuery(
     IRequest[
-        BaseResponse[PagedResultDto[ProductDto]]
+        BaseResponse[PagedResultDto[ProductSummaryDto]]
     ]
 ):
 

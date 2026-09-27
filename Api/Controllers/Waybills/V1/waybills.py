@@ -64,13 +64,9 @@ async def create_waybill(
 async def get_all_waybills(
     mediator: MediatorDependency,
     pagination: PagedRequestDto[None] = Depends(),
-    status: str | None = None,
-    priority: str | None = None,
 ):
     query = GetAllWaybillsQuery(
         pagination=pagination,
-        status=status,
-        priority=priority,
     )
 
     result = await mediator.send(

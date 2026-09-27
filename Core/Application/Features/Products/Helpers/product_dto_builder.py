@@ -2,6 +2,7 @@ from Core.Application.DTOs.Products.product import (
     ProductCategoryDto,
     ProductDto,
     ProductDynamicFieldDto,
+    ProductSummaryDto,
 )
 from Core.Domain.Models.Products.product import (
     Product,
@@ -76,3 +77,28 @@ def build_product_dto(
         created_at=product.created_at,
         updated_at=product.updated_at,
     )
+
+
+def build_product_summary_dto(
+    product: Product,
+) -> ProductSummaryDto:
+    """
+    Constructs a lightweight ProductSummaryDto with all static fields
+    and zero dynamic fields for list endpoints.
+    """
+    category_dtos = [
+        ProductCategoryDto(
+            id=category.id,
+            name=category.name,
+        )
+        for category in (product.categories or [])
+    ]
+
+    return ProductSummaryDto(
+        id=product.id,
+        name=product.name,
+        categories=category_dtos,
+        created_at=product.created_at,
+        updated_at=product.updated_at,
+    )
+
