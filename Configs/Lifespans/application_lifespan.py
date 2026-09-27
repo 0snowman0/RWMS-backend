@@ -12,7 +12,11 @@ async def application_lifespan(
     # Startup
     # =========================================================
 
-    await app.state.log_worker.start()
+    if hasattr(app.state, "log_worker"):
+        await app.state.log_worker.start()
+
+    if hasattr(app.state, "audit_log_worker"):
+        await app.state.audit_log_worker.start()
 
     try:
 
@@ -24,4 +28,8 @@ async def application_lifespan(
         # Shutdown
         # =====================================================
 
-        await app.state.log_worker.stop()
+        if hasattr(app.state, "audit_log_worker"):
+            await app.state.audit_log_worker.stop()
+
+        if hasattr(app.state, "log_worker"):
+            await app.state.log_worker.stop()
