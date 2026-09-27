@@ -1,10 +1,14 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from Core.Application.Commons.base_response import (
     BaseResponse,
 )
 from Core.Application.Contracts.Mediators.mediator import (
     IRequest,
+)
+from Core.Application.DTOs.Common.pagination_dto import (
+    PagedRequestDto,
+    PagedResultDto,
 )
 from Core.Application.DTOs.Waybills.waybill import (
     WaybillSummaryDto,
@@ -26,9 +30,12 @@ from Core.Domain.Enums.Mediators.mediator import (
 )
 class GetAllWaybillsQuery(
     IRequest[
-        BaseResponse[list[WaybillSummaryDto]]
+        BaseResponse[PagedResultDto[WaybillSummaryDto]]
     ]
 ):
 
+    pagination: PagedRequestDto[None] = field(
+        default_factory=lambda: PagedRequestDto[None]()
+    )
     status: str | None = None
     priority: str | None = None
