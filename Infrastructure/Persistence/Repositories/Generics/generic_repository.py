@@ -97,8 +97,11 @@ class GenericRepository(
             sort_by = pagination_params.sort_by
             is_ascending = pagination_params.is_ascending
 
-        page_number = max(1, page_number)
-        page_size = max(1, page_size)
+        is_all = (page_number == -1 and page_size == -1)
+
+        if not is_all:
+            page_number = max(1, page_number)
+            page_size = max(1, page_size)
 
         # 1. Total count query
         count_statement = select(func.count()).select_from(self._entity_type)
@@ -107,8 +110,7 @@ class GenericRepository(
 
         total_count = await self._session.scalar(count_statement) or 0
 
-        # 2. Items query with dynamic sorting and pagination
-        offset = (page_number - 1) * page_size
+        # 2. Items query with dynamic sorting and optional pagination
         statement = select(self._entity_type)
 
         if predicate is not None:
@@ -121,7 +123,9 @@ class GenericRepository(
         if sort_clause is not None:
             statement = statement.order_by(sort_clause)
 
-        statement = statement.offset(offset).limit(page_size)
+        if not is_all:
+            offset = (page_number - 1) * page_size
+            statement = statement.offset(offset).limit(page_size)
 
         result = await self._session.execute(statement)
         items = list(result.scalars().all())

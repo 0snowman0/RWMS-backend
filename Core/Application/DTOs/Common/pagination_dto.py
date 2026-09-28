@@ -1,7 +1,7 @@
 import math
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 TFilter = TypeVar("TFilter")
@@ -15,14 +15,11 @@ class PagedRequestDto(BaseModel, Generic[TFilter]):
 
     page_number: int = Field(
         default=1,
-        ge=1,
-        description="شماره صفحه",
+        description="شماره صفحه (یا -1 برای دریافت تمام داده‌ها)",
     )
     page_size: int = Field(
         default=10,
-        ge=1,
-        le=100,
-        description="تعداد آیتم‌ها در هر صفحه",
+        description="تعداد آیتم‌ها در هر صفحه (یا -1 برای دریافت تمام داده‌ها)",
     )
     sort_by: str | None = Field(
         default=None,
@@ -36,6 +33,27 @@ class PagedRequestDto(BaseModel, Generic[TFilter]):
         default=None,
         description="شیء فیلتر اختیاری",
     )
+
+    @property
+    def is_all_requested(self) -> bool:
+        return self.page_number == -1 and self.page_size == -1
+
+    @model_validator(mode="after")
+    def validate_pagination(self) -> "PagedRequestDto[TFilter]":
+        if self.page_number == -1 and self.page_size == -1:
+            return self
+
+        if self.page_number < 1:
+            raise ValueError(
+                "page_number must be greater than or equal to 1, or -1 when page_size is -1."
+            )
+
+        if self.page_size < 1 or self.page_size > 100:
+            raise ValueError(
+                "page_size must be between 1 and 100, or -1 when page_number is -1."
+            )
+
+        return self
 
 
 class PagedResultDto(BaseModel, Generic[TItem]):
@@ -76,6 +94,17 @@ class PagedResultDto(BaseModel, Generic[TItem]):
         page_number: int,
         page_size: int,
     ) -> "PagedResultDto[TItem]":
+        if page_number == -1 and page_size == -1:
+            return cls(
+                items=items,
+                total_count=total_count,
+                page_number=-1,
+                page_size=-1,
+                total_pages=1 if total_count > 0 else 0,
+                has_previous_page=False,
+                has_next_page=False,
+            )
+
         total_pages = math.ceil(total_count / page_size) if page_size > 0 else 0
         return cls(
             items=items,
