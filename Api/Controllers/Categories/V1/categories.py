@@ -105,6 +105,8 @@ async def update_category(
     result = await mediator.send(
         command
     )
+    if result.is_success and result.data:
+        result.data = result.data.id
 
     return to_api_response(
         result=result
