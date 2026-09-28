@@ -1,5 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from Core.Application.Contracts.DataBases.Repositories.AuditLogs.audit_log_repository import (
+    IAuditLogRepository,
+)
 from Core.Application.Contracts.DataBases.Repositories.Categories.category_repository import ICategoryRepository
 from Core.Application.Contracts.DataBases.Repositories.Products.product_repository import IProductRepository
 from Core.Application.Contracts.DataBases.Repositories.WaybillTemplates.waybill_template_repository import (
@@ -15,6 +18,9 @@ from Core.Application.Contracts.DataBases.Repositories.Users.user_repository imp
     IUserRepository,
 )
 
+from Infrastructure.Persistence.Repositories.AuditLogs.audit_log_repository import (
+    AuditLogRepository,
+)
 from Infrastructure.Persistence.Repositories.Categories.category_repository import CategoryRepository
 from Infrastructure.Persistence.Repositories.Products.product_repository import ProductRepository
 from Infrastructure.Persistence.Repositories.WaybillTemplates.waybill_template_repository import (
@@ -55,6 +61,10 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._products = ProductRepository(
             session=session,
         )
+
+        self._audit_logs = AuditLogRepository(
+            session=session,
+        )
         
     @property
     def users(self) -> IUserRepository:
@@ -85,6 +95,12 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     ) -> IWaybillRepository:
 
         return self._waybills
+
+    @property
+    def audit_logs(
+        self,
+    ) -> IAuditLogRepository:
+        return self._audit_logs
     async def __aenter__(self) -> "SqlAlchemyUnitOfWork":
         return self
 

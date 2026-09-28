@@ -19,8 +19,19 @@ def configure_exception_handlers(
     if not settings.enabled:
         return
 
+    from fastapi.exceptions import RequestValidationError
+    from pydantic import ValidationError
+
     app.add_exception_handler(
         Exception,
+        handler.handle,
+    )
+    app.add_exception_handler(
+        RequestValidationError,
+        handler.handle,
+    )
+    app.add_exception_handler(
+        ValidationError,
         handler.handle,
     )
 

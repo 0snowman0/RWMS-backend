@@ -1,5 +1,8 @@
 from Core.Application.Mapping.mapper import Mapper
 from Core.Application.Mapping.mapping_profile import MappingProfile
+from Core.Application.Mapping.Profiles.audit_log_mapping_profile import (
+    AuditLogMappingProfile,
+)
 from Core.Application.Mapping.Profiles.category_mapping_profile import (
     CategoryMappingProfile,
 )
@@ -23,6 +26,7 @@ def configure_mapper() -> Mapper:
         CategoryMappingProfile(),
         WaybillTemplateMappingProfile(),
         WaybillMappingProfile(),
+        AuditLogMappingProfile(),
     ]
 
     for profile in profiles:

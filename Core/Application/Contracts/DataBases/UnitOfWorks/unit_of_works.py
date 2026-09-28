@@ -1,5 +1,8 @@
 from typing import Protocol
 
+from Core.Application.Contracts.DataBases.Repositories.AuditLogs.audit_log_repository import (
+    IAuditLogRepository,
+)
 from Core.Application.Contracts.DataBases.Repositories.Categories.category_repository import (
  ICategoryRepository   
 )
@@ -39,6 +42,10 @@ class IUnitOfWork(Protocol):
 
     @property
     def waybills(self) -> IWaybillRepository:
+        ...
+
+    @property
+    def audit_logs(self) -> IAuditLogRepository:
         ...
 
     async def __aenter__(self) -> "IUnitOfWork":

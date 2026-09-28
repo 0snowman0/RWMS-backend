@@ -237,3 +237,58 @@ WHERE action = 'Update'
 2. **تخلیه امن هنگام خاموش شدن سرور (Graceful Shutdown)**:
    - در فایل `application_lifespan.py` متد `await app.state.audit_log_worker.stop()` فراخوانی می‌شود.
    - در زمان توقف یا ری‌استارت اپلیکیشن، کارگر پس‌زمینه ابتدا تمامی لاگ‌های موجود در صف را تا آخرین دانه در دیتابیس ذخیره کرده و سپس تسک را خاتمه می‌دهد؛ بنابراین هیچ رکوردی از دست نخواهد رفت.
+
+---
+
+### ۹. وب‌سرویس دریافت لاگ‌ها با صفحه‌بندی (Audit Logs Paged API)
+
+برای مشاهده و بازیابی لاگ‌های ممیزی، اندپوینت استاندارد زیر همراه با مکانیزم یکپارچه صفحه‌بندی، سورتینگ و قابلیت دریافت تمامی داده‌ها پیاده‌سازی شده است:
+
+- **روش و آدرس:** `GET /api/v1AuditLogs/V1`
+- **پارامترهای ورودی (Query Parameters):**
+  - `page_number`: شماره صفحه (پیش‌فرض: `1`، یا `-1` برای دریافت همه)
+  - `page_size`: تعداد آیتم‌ها در هر صفحه (پیش‌فرض: `10`، بین `1` تا `100`، یا `-1` برای دریافت همه)
+  - `sort_by`: ستون مورد نظر برای مرتب‌سازی (اختیاری، مثلاً `id` یا `created_at` - در صورت عدم ارسال بر اساس کلید اصلی مرتب می‌شود)
+  - `is_ascending`: جهت مرتب‌سازی (`true` صعودی، `false` نزولی، پیش‌فرض: `true`)
+
+#### نمونه ۱: درخواست صفحه‌بندی استاندارد
+```http
+GET /api/v1AuditLogs/V1?page_number=1&page_size=10&sort_by=id&is_ascending=false
+```
+
+#### نمونه ۲: درخواست دریافت تمامی لاگ‌ها
+```http
+GET /api/v1AuditLogs/V1?page_number=-1&page_size=-1
+```
+
+#### نمونه خروجی:
+```json
+{
+  "is_success": true,
+  "message": "Audit logs retrieved successfully.",
+  "errors": [],
+  "data": {
+    "items": [
+      {
+        "id": 12,
+        "table_name": "products",
+        "action": "Update",
+        "old_values": { "name": "Old Product" },
+        "new_values": { "name": "New Product" },
+        "primary_key": { "id": 5 },
+        "user_id": 1,
+        "created_at": "2026-09-28T23:15:00Z",
+        "updated_at": "2026-09-28T23:15:00Z"
+      }
+    ],
+    "total_count": 1,
+    "page_number": 1,
+    "page_size": 10,
+    "total_pages": 1,
+    "has_previous_page": false,
+    "has_next_page": false
+  },
+  "status": "success"
+}
+```
+
