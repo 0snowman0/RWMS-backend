@@ -1,6 +1,8 @@
-from fastapi import Request
+from fastapi import Request, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 from Configs.ExceptionHandlers.exception_handler_settings import (
     ExceptionHandlerSettings,
@@ -31,10 +33,43 @@ class GlobalExceptionHandler:
     ) -> JSONResponse:
 
         # =====================================================
-        # HTTP Status in Logging Context
+        # Validation Errors (HTTP 422)
         # =====================================================
 
         context = LoggingContextAccessor.get()
+
+        if isinstance(exception, (RequestValidationError, ValidationError)):
+            if context is not None:
+                context.status_code = (
+                    status.HTTP_422_UNPROCESSABLE_ENTITY
+                )
+
+            error_messages: list[str] = []
+            if hasattr(exception, "errors"):
+                for err in exception.errors():
+                    msg = err.get("msg") if isinstance(err, dict) else str(err)
+                    loc = " -> ".join(str(l) for l in err.get("loc", [])) if isinstance(err, dict) else ""
+                    error_messages.append(f"{loc}: {msg}" if loc else str(msg))
+            else:
+                error_messages.append(str(exception))
+
+            val_result = BaseResponse.validation_error(
+                message="Validation error.",
+                errors=error_messages,
+            )
+
+            return JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content=jsonable_encoder(
+                    val_result.model_dump(
+                        mode="python"
+                    )
+                ),
+            )
+
+        # =====================================================
+        # HTTP Status in Logging Context
+        # =====================================================
 
         if context is not None:
             context.status_code = (
