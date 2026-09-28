@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from Configs.AuditLogs.audit_log_config import configure_audit_logging
 from Configs.ExceptionHandlers.exception_handler_config import configure_exception_handlers
 from Configs.Lifespans.application_lifespan import application_lifespan
 from Configs.Loggings.logging_config import configure_logging
@@ -18,6 +19,8 @@ app = FastAPI(
 )
 
 configure_logging(app)
+
+configure_audit_logging(app)
 
 configure_rate_limiting(app)
 
