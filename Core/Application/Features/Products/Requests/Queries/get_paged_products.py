@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from Core.Application.Commons.base_response import (
     BaseResponse,
@@ -10,8 +10,8 @@ from Core.Application.DTOs.Common.pagination_dto import (
     PagedRequestDto,
     PagedResultDto,
 )
-from Core.Application.DTOs.WaybillTemplates.waybill_template import (
-    WaybillTemplateSummaryDto,
+from Core.Application.DTOs.Products.product import (
+    ProductSummaryDto,
 )
 from Core.Application.Mediators.decorators import (
     request_type,
@@ -28,12 +28,10 @@ from Core.Domain.Enums.Mediators.mediator import (
     frozen=True,
     slots=True,
 )
-class GetAllWaybillTemplatesQuery(
+class GetPagedProductsQuery(
     IRequest[
-        BaseResponse[PagedResultDto[WaybillTemplateSummaryDto]]
+        BaseResponse[PagedResultDto[ProductSummaryDto]]
     ]
 ):
 
-    pagination: PagedRequestDto[None] = field(
-        default_factory=lambda: PagedRequestDto[None]()
-    )
+    pagination: PagedRequestDto[None]

@@ -1,3 +1,5 @@
+from fastapi import Depends
+
 from Api.Configs.app_router import (
     AppRouter,
 )
@@ -6,6 +8,9 @@ from Api.Responses.api_response import (
 )
 from Configs.dependencies import (
     MediatorDependency,
+)
+from Core.Application.DTOs.Common.pagination_dto import (
+    PagedRequestDto,
 )
 from Core.Application.DTOs.WaybillTemplates.waybill_template import (
     CreateWaybillTemplateDto,
@@ -58,10 +63,10 @@ async def create_waybill_template(
 )
 async def get_all_waybill_templates(
     mediator: MediatorDependency,
-    include_inactive: bool = False,
+    pagination: PagedRequestDto[None] = Depends(),
 ):
     query = GetAllWaybillTemplatesQuery(
-        include_inactive=include_inactive,
+        pagination=pagination,
     )
 
     result = await mediator.send(

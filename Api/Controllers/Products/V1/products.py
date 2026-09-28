@@ -1,28 +1,33 @@
+from fastapi import Depends
+
 from Api.Configs.app_router import (
     AppRouter,
 )
-
+from Api.Responses.api_response import (
+    to_api_response,
+)
 from Configs.dependencies import (
     MediatorDependency,
 )
-
+from Core.Application.DTOs.Common.pagination_dto import (
+    PagedRequestDto,
+)
 from Core.Application.DTOs.Products.product import (
     CreateProductDto,
     UpdateProductDto,
 )
-
 from Core.Application.Features.Products.Requests.Commands.create_product import (
     CreateProductCommand,
 )
-
 from Core.Application.Features.Products.Requests.Commands.update_product import (
     UpdateProductCommand,
 )
-
 from Core.Application.Features.Products.Requests.Commands.delete_product import (
     DeleteProductCommand,
 )
-
+from Core.Application.Features.Products.Requests.Queries.get_paged_products import (
+    GetPagedProductsQuery,
+)
 from Core.Application.Features.Products.Requests.Queries.get_product_by_id import (
     GetProductByIdQuery,
 )
@@ -55,6 +60,27 @@ async def create_product(
         "errors": result.errors,
         "status": result.status,
     }
+
+
+@router.get(
+    "",
+)
+async def get_all_products(
+    mediator: MediatorDependency,
+    pagination: PagedRequestDto[None] = Depends(),
+):
+    query = GetPagedProductsQuery(
+        pagination=pagination,
+    )
+
+    result = await mediator.send(
+        query,
+    )
+
+    return to_api_response(
+        result=result,
+    )
+
 
 @router.get(
     "/{product_id}",

@@ -10,6 +10,9 @@ from Core.Application.Contracts.Mapper.mapper import (
 from Core.Application.Contracts.Mediators.mediator import (
     IRequestHandler,
 )
+from Core.Application.DTOs.Common.pagination_dto import (
+    PagedResultDto,
+)
 from Core.Application.DTOs.WaybillTemplates.waybill_template import (
     WaybillTemplateSummaryDto,
 )
@@ -19,16 +22,13 @@ from Core.Application.Features.WaybillTemplates.Requests.Queries.get_all_waybill
 from Core.Application.Mediators.handler_decorators import (
     handler_for,
 )
-from Core.Domain.Models.WaybillTemplates.waybill_template import (
-    WaybillTemplate,
-)
 
 
 @handler_for(GetAllWaybillTemplatesQuery)
 class GetAllWaybillTemplatesQueryHandler(
     IRequestHandler[
         GetAllWaybillTemplatesQuery,
-        BaseResponse[list[WaybillTemplateSummaryDto]],
+        BaseResponse[PagedResultDto[WaybillTemplateSummaryDto]],
     ]
 ):
 
@@ -44,22 +44,25 @@ class GetAllWaybillTemplatesQueryHandler(
     async def handle(
         self,
         request: GetAllWaybillTemplatesQuery,
-    ) -> BaseResponse[list[WaybillTemplateSummaryDto]]:
+    ) -> BaseResponse[PagedResultDto[WaybillTemplateSummaryDto]]:
 
-        predicate = None
-        if not request.include_inactive:
-            predicate = (WaybillTemplate.is_active == True)
-
-        templates = await self._uow.waybill_templates.get_all(
-            predicate=predicate
+        paged_templates = await self._uow.waybill_templates.get_paged(
+            pagination_params=request.pagination,
         )
 
         template_dtos = self._mapper.map_list(
-            templates,
+            paged_templates.items,
             WaybillTemplateSummaryDto,
         )
 
-        return BaseResponse[list[WaybillTemplateSummaryDto]].success(
-            data=template_dtos,
+        paged_result = PagedResultDto[WaybillTemplateSummaryDto].create(
+            items=template_dtos,
+            total_count=paged_templates.total_count,
+            page_number=paged_templates.page_number,
+            page_size=paged_templates.page_size,
+        )
+
+        return BaseResponse[PagedResultDto[WaybillTemplateSummaryDto]].success(
+            data=paged_result,
             message="Waybill templates retrieved successfully.",
         )
