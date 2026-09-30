@@ -5,6 +5,9 @@ from fastapi.responses import JSONResponse
 
 
 from Core.Application.Commons.base_response import BaseResponse
+from Core.Application.Commons.date_converter import (
+    format_response_content,
+)
 from Core.Domain.Enums.Responses.response_status import (
     ResponseStatus,
 )
@@ -41,7 +44,7 @@ def to_api_response(
             status.HTTP_409_CONFLICT,
 
         ResponseStatus.VALIDATION_ERROR:
-            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
     }
 
     status_code = status_codes.get(
@@ -51,7 +54,5 @@ def to_api_response(
 
     return JSONResponse(
         status_code=status_code,
-        content=result.model_dump(
-            mode="json",
-        ),
+        content=format_response_content(result),
     )

@@ -98,7 +98,9 @@ async def get_product_by_id(
         query
     )
 
-    return result
+    return to_api_response(
+        result=result,
+    )
 
 @router.put(
     "/{product_id}",
@@ -142,4 +144,6 @@ async def delete_product(
         command
     )
 
-    return result
+    return to_api_response(
+        result=result,
+    )

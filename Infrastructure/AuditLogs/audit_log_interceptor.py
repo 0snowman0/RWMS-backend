@@ -184,9 +184,14 @@ class AuditLogInterceptor:
                 pk = _extract_primary_key(obj)
                 entry["pk"] = pk
 
-                # به‌روزرسانی مقدار id در new_values در صورت موجود بودن
-                if "id" in pk and entry["new_values"] is not None:
-                    entry["new_values"]["id"] = pk["id"]
+                # به‌روزرسانی مقادیر تولیدشده پس از فلاش (مانند id, created_at, updated_at)
+                if entry["new_values"] is not None:
+                    state = inspect(obj)
+                    for attr in state.mapper.column_attrs:
+                        if entry["new_values"].get(attr.key) is None:
+                            val = getattr(obj, attr.key, None)
+                            if val is not None:
+                                entry["new_values"][attr.key] = _serialize_value(val)
 
                 # پاک‌سازی ارجاع به آبجکت ORM جهت آزادسازی حافظه
                 entry["obj"] = None
